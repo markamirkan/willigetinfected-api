@@ -86,6 +86,7 @@ function returnPop(country, state) {
 }
 
 exports.getChanceInfected = functions.https.onRequest((request, response) => {
+    XMLHttpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
     country = request.query.country;
     state = request.query.state;
     days = parseInt(request.query.days);
