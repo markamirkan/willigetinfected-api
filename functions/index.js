@@ -3,6 +3,16 @@ var fs = require('fs');
 const countryInfo = require('countryjs');
 const { getCode, getName } = require('country-list');
 const arr = require('./arr');
+const cors = require('cors')({ origin: true });
+
+
+exports.sample = functions.https.onRequest((req, res) => {
+    cors(req, res, () => {
+      res.send('Passed.');
+    });
+  });
+
+
 
 var csvArr = [[]];
 var country, state;
@@ -86,18 +96,19 @@ function returnPop(country, state) {
 }
 
 exports.getChanceInfected = functions.https.onRequest((request, response) => {
-    XMLHttpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
-    country = request.query.country;
-    state = request.query.state;
-    days = parseInt(request.query.days);
-    if (state == undefined || state == 'blank') {
-        state = "blank";
-    }
-    result.country = country;
-    result.state = state;
-    if (result.state == 'blank') delete result.state;
-    result.population = returnPop(country, state);
-    result.confirmed = getConfirmed(country, state);
-    result.chance = getChanceInfected(getConfirmed(country, state), days, returnPop(country, state));
-    response.send(JSON.stringify(result));
+    cors(request, response, () => {
+        country = request.query.country;
+        state = request.query.state;
+        days = parseInt(request.query.days);
+        if (state == undefined || state == 'blank') {
+            state = "blank";
+        }
+        result.country = country;
+        result.state = state;
+        if (result.state == 'blank') delete result.state;
+        result.population = returnPop(country, state);
+        result.confirmed = getConfirmed(country, state);
+        result.chance = getChanceInfected(getConfirmed(country, state), days, returnPop(country, state));
+        response.send(JSON.stringify(result));
+    });
 });
