@@ -18,11 +18,14 @@ var csvArr = [[]];
 var country, state;
 
 var result = {
-    chance: 0,
+    week: 0,
+    month: 0,
+    threemonth: 0,
     country: 'blank',
     state: 'blank',
     population: 0,
     confirmed: 0
+    
 };
 
 try {
@@ -96,7 +99,7 @@ function returnPop(country, state) {
 }
 
 exports.getChanceInfected = functions.https.onRequest((request, response) => {
-    cors(request, response, () => {
+    /*cors(request, response, () => {
         country = request.query.country;
         state = request.query.state;
         days = parseInt(request.query.days);
@@ -109,6 +112,23 @@ exports.getChanceInfected = functions.https.onRequest((request, response) => {
         result.population = returnPop(country, state);
         result.confirmed = getConfirmed(country, state);
         result.chance = getChanceInfected(getConfirmed(country, state), days, returnPop(country, state));
+        response.send(JSON.stringify(result));
+    });*/
+    cors(request, response, () => {
+        country = request.query.country;
+        state = request.query.state;
+        //days = parseInt(request.query.days);
+        if (state == undefined || state == 'blank') {
+            state = "blank";
+        }
+        result.country = country;
+        result.state = state;
+        if (result.state == 'blank') delete result.state;
+        result.population = returnPop(country, state);
+        result.confirmed = getConfirmed(country, state);
+        result.week = getChanceInfected(getConfirmed(country, state), 7, returnPop(country, state));
+        result.month = getChanceInfected(getConfirmed(country, state), 31, returnPop(country, state));
+        result.threemonth = getChanceInfected(getConfirmed(country, state), 93, returnPop(country, state));
         response.send(JSON.stringify(result));
     });
 });
