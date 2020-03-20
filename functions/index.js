@@ -5,27 +5,17 @@ const { getCode, getName } = require('country-list');
 const arr = require('./arr');
 const cors = require('cors')({ origin: true });
 
-
-exports.sample = functions.https.onRequest((req, res) => {
-    cors(req, res, () => {
-      res.send('Passed.');
-    });
-  });
-
-
-
 var csvArr = [[]];
 var country, state;
 
 var result = {
     week: 0,
     month: 0,
-    threemonth: 0,
+    eightweek: 0,
     country: 'blank',
     state: 'blank',
     population: 0,
     confirmed: 0
-    
 };
 
 try {
@@ -62,7 +52,7 @@ function getConfirmed(country, state) {
 }
 
 function getChanceInfected(casesToday, days, population) {
-    let chanceInfected = ((casesToday * Math.pow(1.07, days)) / population) * 100;
+    let chanceInfected = ((casesToday * Math.pow(1.19656, days)) / population) * 100;
     if (chanceInfected >= 100) chanceInfected = 100;
     return chanceInfected;
 }
@@ -99,21 +89,6 @@ function returnPop(country, state) {
 }
 
 exports.getChanceInfected = functions.https.onRequest((request, response) => {
-    /*cors(request, response, () => {
-        country = request.query.country;
-        state = request.query.state;
-        days = parseInt(request.query.days);
-        if (state == undefined || state == 'blank') {
-            state = "blank";
-        }
-        result.country = country;
-        result.state = state;
-        if (result.state == 'blank') delete result.state;
-        result.population = returnPop(country, state);
-        result.confirmed = getConfirmed(country, state);
-        result.chance = getChanceInfected(getConfirmed(country, state), days, returnPop(country, state));
-        response.send(JSON.stringify(result));
-    });*/
     cors(request, response, () => {
         country = request.query.country;
         state = request.query.state;
@@ -128,7 +103,7 @@ exports.getChanceInfected = functions.https.onRequest((request, response) => {
         result.confirmed = getConfirmed(country, state);
         result.week = getChanceInfected(getConfirmed(country, state), 7, returnPop(country, state));
         result.month = getChanceInfected(getConfirmed(country, state), 31, returnPop(country, state));
-        result.threemonth = getChanceInfected(getConfirmed(country, state), 93, returnPop(country, state));
+        result.eightweek = getChanceInfected(getConfirmed(country, state), 56, returnPop(country, state));
         response.send(JSON.stringify(result));
     });
 });
