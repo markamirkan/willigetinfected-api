@@ -92,7 +92,6 @@ exports.getChanceInfected = functions.https.onRequest((request, response) => {
     cors(request, response, () => {
         country = request.query.country;
         state = request.query.state;
-        //days = parseInt(request.query.days);
         if (state == undefined || state == 'blank') {
             state = "blank";
         }
